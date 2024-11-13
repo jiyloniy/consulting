@@ -96,3 +96,9 @@ class TarifViewSet(viewsets.ModelViewSet):
     permission_classes = [ReadORAuditPermission]
    
     pagination_class = PageNumberPagination
+
+
+
+
+
+

@@ -44,12 +44,30 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-corsheaders = {
-    'default': {
-        'ACCESS_CONTROL_ALLOW_ORIGIN': ['*'],
-        'ACCESS_CONTROL_ALLOW_METHODS': ['*'],
-    }
-}
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True  # Eski versiyalar uchun
+
+# Qo'shimcha CORS sozlamalar (ixtiyoriy)
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 
 REST_FRAMEWORK = {
@@ -60,6 +78,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

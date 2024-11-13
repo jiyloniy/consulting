@@ -29,10 +29,11 @@ class University(models.Model):
 
 class Lids(models.Model):
     types = (
-        (1,'beginner'),
-        (2,'waiting'),
-        (3,'accepted'),
-        (4,'rejected'),
+        (1,'yangi'),
+        (2,'kutilayotgan'),
+        (3,'shartnoma qilingan'),
+        (4,'toxtatilgan'),
+
     )
     type = models.IntegerField(choices=types,default=1)
     name = models.CharField(max_length=255)
