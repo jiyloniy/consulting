@@ -10,25 +10,77 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.exceptions import TokenError
 from .permissin import ReadORAuditPermission,PostAndAuhtorPermission
 
 User = get_user_model()
-class LogoutView(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
+class LogoutView(APIView):
+    permission_classes = []
+    
     def post(self, request):
         try:
-            refresh_token = request.data["refresh_token"]
+            refresh_token = request.data.get("refresh_token")
+            if not refresh_token:
+                return Response(
+                    {"error": "Refresh token is required"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Convert the token string to a RefreshToken instance
             token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
+            
+            # Use blacklist if available
+            if hasattr(token, 'blacklist'):
+                token.blacklist()
+                return Response(
+                    {"detail": "Successfully logged out"}, 
+                    status=status.HTTP_200_OK
+                )
+
+            # Alternative approach if blacklist() is not available
+            outstanding_token = OutstandingToken.objects.get(
+                jti=token['jti'],
+                user_id=token['user_id']
+            )
+            BlacklistedToken.objects.get_or_create(token=outstanding_token)
+            
+            return Response(
+                {"detail": "Successfully logged out"}, 
+                status=status.HTTP_200_OK
+            )
+
+        except ObjectDoesNotExist:
+            return Response(
+                {"error": "Token is invalid or expired"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except TokenError:
+            return Response(
+                {"error": "Invalid or expired token"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 class LoginView(APIView):
     def post(self, request):
-        print(request.query_params)
+        
         username = request.data.get("username") 
         if username is None:
             username = request.query_params.get("username")
@@ -37,9 +89,9 @@ class LoginView(APIView):
         if password is None:
             password = request.query_params.get("password")
         users = User.objects.all()
-        print(users)
+        
         user = User.objects.filter(username=username).first()
-        print(user)
+        
         if user is None:
             return Response({"error": "Invalid email"}, status=status.HTTP_400_BAD_REQUEST)
         if not user.check_password(password):
