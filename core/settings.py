@@ -162,12 +162,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # abstract user model'
-
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "assets"]
 
-MEDIA_URL = "/media/"
+MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
-
 
 
 from datetime import timedelta
