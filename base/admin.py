@@ -57,7 +57,7 @@ class ShartnomaAdmin(admin.ModelAdmin):
     list_display = ['id','name','created_at','updated_at']
     list_display_links = ['name']
     list_filter = ['id','name','created_at','updated_at']
-    search_fields = ['name','description']
+    search_fields = ['name','description'] 
     list_per_page = 20
     class Meta:
         model = Shartnoma

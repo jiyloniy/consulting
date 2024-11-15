@@ -55,7 +55,7 @@ class Tarif(models.Model):
     
     def __str__(self):
         return self.name
-    
+       
 class Shartnoma(models.Model):
     name = models.CharField(max_length=255)
     second_name = models.CharField(max_length=255)
