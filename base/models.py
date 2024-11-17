@@ -24,6 +24,8 @@ class University(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     url_link = models.URLField(blank=True,null=True)
+    is_active = models.BooleanField(default=True)
+    comments = models.JSONField()
     def __str__(self):
         return self.name
 

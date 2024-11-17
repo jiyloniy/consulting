@@ -129,7 +129,7 @@ class LidsViewSet(viewsets.ModelViewSet):
 class HarajatlarViewSet(viewsets.ModelViewSet):
     queryset = Harajatlar.objects.all()
     serializer_class = HarajatlarSerializer
-    permission_classes = [ReadORAuditPermission]
+    permission_classes = [IsAuthenticated]
     
     pagination_class = PageNumberPagination
 
